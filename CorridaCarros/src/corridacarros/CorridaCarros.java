@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.JTextField;
 
 /**
  *
@@ -29,6 +30,11 @@ public class CorridaCarros {
     static boolean resetRaceButtonIsPressed = false;
     static int winningCar = 0;
     static boolean winner = false;
+    static int carNumber;
+    static int lapNumber;
+    static int probNumber;
+    static int fuelNumber;
+    
     
     
     //the finish method synchronized so the threads must wait their turn to acess it
@@ -61,7 +67,7 @@ public class CorridaCarros {
 
     private void initialize() {
         frame = new JFrame();
-        frame.setBounds(100,100,598,430);
+        frame.setBounds(100,100,598,700);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
         
@@ -75,11 +81,7 @@ public class CorridaCarros {
         frame.getContentPane().add(msg);
     
         //buttons
-        JButton btnStart = new JButton("Run Race");
-        btnStart.setFont(new Font("Tahoma", Font.PLAIN, 18));
-        btnStart.addActionListener(new RunRace());
-        btnStart.setBounds(50,287,155,40);
-        frame.getContentPane().add(btnStart);
+        
     
         JButton btnReset = new JButton("Reset Race");
         btnReset.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -92,24 +94,92 @@ public class CorridaCarros {
         btnQuit.addActionListener(new RunQuit());
         btnQuit.setBounds(360,287,155,40);
         frame.getContentPane().add(btnQuit);
+        
+        var numCarLabel = new JLabel("Número de carros:");
+        numCarLabel.setBounds(10,10,120,20);
+        
+        JTextField carNum = new JTextField();
+        carNum.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        carNum.setBounds(121,10,30,20);
+
+        var numLapsLabel = new JLabel("Número de voltas:");
+        numLapsLabel.setBounds(10,30,120,20);
+        
+        JTextField lapNum = new JTextField();
+        lapNum.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        lapNum.setBounds(121,30,30,20);
+        
+        var numProbBreakLabel = new JLabel("Probabilidade de quebra:");
+        numProbBreakLabel.setBounds(10,50,155,20);
+        
+        JTextField probBreakNum = new JTextField();
+        probBreakNum.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        probBreakNum.setBounds(160,50,30,20);
+        
+        var numProbFuelLabel = new JLabel("Probabilidade de abastecimento:");
+        numProbFuelLabel.setBounds(10,70,190,20);
+        
+        JTextField probFuelNum = new JTextField();
+        probFuelNum.setFont(new Font("Tahoma", Font.PLAIN, 18));        
+        probFuelNum.setBounds(200,70,30,20);
+        
+        frame.getContentPane().add(numCarLabel);
+        frame.getContentPane().add(carNum);
+        frame.getContentPane().add(numLapsLabel);
+        frame.getContentPane().add(lapNum);
+        frame.getContentPane().add(numProbBreakLabel);
+        frame.getContentPane().add(probBreakNum);
+        frame.getContentPane().add(numProbFuelLabel);
+        frame.getContentPane().add(probFuelNum);
+        
+        carNum.setText("0");
+        lapNum.setText("0");
+        probBreakNum.setText("0");
+        probFuelNum.setText("0");
+        
+        JButton btnStart = new JButton("Run Race");
+        btnStart.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        btnStart.setBounds(50,287,155,40);
+        // aqui abaixo é quando chama a action (problema)
+        btnStart.addActionListener(new RunRace(carNum,lapNum,probBreakNum, probFuelNum));
+        frame.getContentPane().add(btnStart);
+        
+        
+        
+        
     }
     
     //run rac is an inner class that starts 1 car threads and runs a race
     class RunRace implements ActionListener{
-        public void actionPerformed(ActionEvent arg0){
+
+
+        public void actionPerformed(ActionEvent arg0, JTextField carNum, JTextField lapNum, JTextField probBreakNum, JTextField probFuelNum){
             if (!runRaceButtonIsPressed){
                 msg.setVisible(false);
                 resetRaceButtonIsPressed = false;
                 runRaceButtonIsPressed = true;
-           
+                
+               carNumber = Integer.parseInt(carNum.getText());
+               lapNumber = Integer.parseInt(lapNum.getText());
+               probNumber = Integer.parseInt(probBreakNum.getText());
+               fuelNumber = Integer.parseInt(probFuelNum.getText());
+               
+               System.out.println(carNumber);
+                    
                 Car1 car1 = new Car1();
                 car1.start();
             }
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
     }
     
     class ResetRace implements ActionListener{
         public void actionPerformed(ActionEvent arg0){
+            // aqui é quando click para executar, eu deveria conseguir recolher os valores dos inputs aqui
             if (!resetRaceButtonIsPressed){
                 msg.setVisible(false);
                 resetRaceButtonIsPressed = true;
