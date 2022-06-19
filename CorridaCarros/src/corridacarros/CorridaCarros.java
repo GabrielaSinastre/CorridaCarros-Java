@@ -5,7 +5,6 @@
 package corridacarros;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
+
 /**
  *
  * @author Gabriela Sinastre, Maykon Borges and Karen Almeida
@@ -24,6 +24,9 @@ public class CorridaCarros {
 
     JFrame frame;
     JProgressBar car1 = new JProgressBar(0, 100);
+    JProgressBar car2 = new JProgressBar(0,100);
+    JProgressBar car3 = new JProgressBar(0,100);
+    
     JLabel msg = new JLabel("");
 
     static boolean runRaceButtonIsPressed = false;
@@ -36,7 +39,7 @@ public class CorridaCarros {
     static int fuelNumber;
 
     //the finish method synchronized so the threads must wait their turn to acess it
-    public synchronized void finish(int i) {
+    public /*synchronized*/ void finish(int i) {
         msg.setVisible(true);
         msg.setText("Car #" + winningCar + " wins the race! Reset race again!");
         if (i == 100) {
@@ -49,7 +52,7 @@ public class CorridaCarros {
         frame.getContentPane().add(msg);
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -60,7 +63,13 @@ public class CorridaCarros {
                 }
             }
         });
+    }*/
+    
+    public static void main(String[] args) {
+            CorridaCarros window = new CorridaCarros();
+            window.frame.setVisible(true);
     }
+    
 
     public CorridaCarros() {
         initialize();
@@ -76,6 +85,18 @@ public class CorridaCarros {
         car1.setForeground(Color.RED);
         car1.setBounds(150, 129, 259, 14);
         frame.getContentPane().add(car1);
+        
+        
+        car2.setStringPainted(true);
+        car2.setForeground(Color.PINK);
+        car2.setBounds(150, 159, 259, 14);
+        frame.getContentPane().add(car2);
+        
+        car3.setStringPainted(true);
+        car3.setForeground(Color.BLUE);
+        car3.setBounds(150, 189, 259, 14);
+        frame.getContentPane().add(car3);
+   
 
         msg.setBounds(85, 100, 410, 14);
         msg.setVisible(false);
@@ -152,60 +173,56 @@ public class CorridaCarros {
                     lapNumber = Integer.parseInt(lapNum.getText());
                     probNumber = Integer.parseInt(probBreakNum.getText());
                     fuelNumber = Integer.parseInt(probFuelNum.getText());
-
-                    System.out.println(carNumber);
                     
-                    /* if (carNumber < 2) {
-                        System.out.print("OI");
-                        JLabel labelAlert = new JLabel("Insira uma quantidade carros maior que 1!");
-                        frame.getContentPane().add(labelAlert);
-                    } else { */
-                      Car1 car1 = new Car1();
-                      car1.start();
-                    // }
+                    if (lapNumber < 10) {
+                        System.out.println("Enter a number of turns greater than 10 !");
+                        System.exit(0);
+                    } 
+                    if (carNumber < 2 && carNumber > 3){
+                        System.out.println("Enter a valid amount of cars, only 2 or 3!");
+                        System.exit(0);
+                    } 
+                    if (probNumber < 10 && fuelNumber < 10){
+                        System.out.println("Enter a reasonable amount of probability, numbers greater than 10 are recommended !");
+                        System.exit(0);
+                    } 
+                    if (carNumber == 2) {
+                        Car car1 = new Car();
+                        Car car2 = new Car();
+                        car1.correr();
+                        car2.correr();
+                        car3.setVisible(false);
+                    }
+                    if (carNumber == 3){
+                        car3.setVisible(true);
+                        Car car1 = new Car();
+                        Car car2 = new Car();
+                        Car car3 = new Car();
+                        car1.correr();
+                        car2.correr();
+                        car3.correr();
+                    }
                 }
             }
         });
 
     }
 
-    //run rac is an inner class that starts 1 car threads and runs a race
-    /* class RunRace implements ActionListener{
-        public void actionPerformed(ActionEvent arg0, JTextField carNum, JTextField lapNum, JTextField probBreakNum, JTextField probFuelNum){
-            if (!runRaceButtonIsPressed){
-                msg.setVisible(false);
-                resetRaceButtonIsPressed = false;
-                runRaceButtonIsPressed = true;
-                
-               carNumber = Integer.parseInt(carNum.getText());
-               lapNumber = Integer.parseInt(lapNum.getText());
-               probNumber = Integer.parseInt(probBreakNum.getText());
-               fuelNumber = Integer.parseInt(probFuelNum.getText());
-               
-               System.out.println(carNumber);
-                    
-                Car1 car1 = new Car1();
-                car1.start();
-            }
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-    } */
     class ResetRace implements ActionListener {
 
         public void actionPerformed(ActionEvent arg0) {
-            // aqui é quando click para executar, eu deveria conseguir recolher os valores dos inputs aqui
             if (!resetRaceButtonIsPressed) {
                 msg.setVisible(false);
                 resetRaceButtonIsPressed = true;
                 runRaceButtonIsPressed = false;
                 winner = false;
 
-                Car1 car1 = new Car1();
+                Car car1 = new Car();
                 car1.reset();
+                Car car2 = new Car();
+                car2.reset();
+                Car car3 = new Car();
+                car3.reset();
             }
         }
     }
@@ -217,30 +234,142 @@ public class CorridaCarros {
         }
     }
 
-    class Car1 extends Thread {
+    class Car /*extends Thread*/ {
 
         public void reset() {
             car1.setValue(0);
             car1.repaint();
+            car2.setValue(0);
+            car2.repaint();
+            car3.setValue(0);
+            car3.repaint();
+            
         }
 
-        public void run() {
+        public void correr() {
+            int eachLap = lapNumber;
+            while (eachLap != 0){
+            System.out.println("Remaining laps for the cars : " + eachLap);
             for (int i = 0; i < 101; i++) {
                 if (winner) {
                     break;
                 }
                 car1.setValue(i);
                 car1.repaint();
-                if (i == 100) {
+                car2.setValue(i);
+                car2.repaint();
+                car3.setValue(i);
+                car3.repaint();
+                if (i == 100 && eachLap == 1) {
                     winningCar = 1;
                     finish(i);
                 }
+                int rand1 = (int) (Math.random() * probNumber);
+                int rand2 = (int) (Math.random() * fuelNumber);
+                if ( rand1 <= probNumber/4 && i > 3){
+                    System.out.println("Car broke at lap number " + eachLap + " in " + i + " meters" );
+                    i--;
+                }else if ( rand2 <= fuelNumber/4 && i > 2){
+                    System.out.println("Car stopped because needed to fuel his tank at lap " + eachLap + " in " + i + " meters " );
+                    i--;
+                }        
+                
+                /*try {
+                    Thread.sleep(Math.abs(UUID.randomUUID().getMostSignificantBits()) % 60);
+                } catch (InterruptedException err) {
+                    err.printStackTrace();
+                }*/
+            }
+            eachLap--;
+            }
+            
+        }
+    }
+    /*
+    class Car2 extends Thread {
+
+        public void reset() {
+            car2.setValue(0);
+            car2.repaint();
+        }
+
+        public void correr() {
+            int eachLap = lapNumber;
+            while (eachLap != 0){
+            System.out.println("Voltas restante: " + eachLap);
+            for (int i = 0; i < 101; i++) {
+                if (winner) {
+                    break;
+                }
+                
+                car2.setValue(i);
+                car2.repaint();
+                if (i == 100 && eachLap == 1) {
+                    winningCar = 2;
+                    finish(i);
+                }
+                int rand1 = (int) (Math.random() * probNumber);
+                int rand2 = (int) (Math.random() * fuelNumber);
+                if ( rand1 <= probNumber/4 && i > 3){
+                    System.out.println("This car broke at lap number " + eachLap + " in " + i + " meters" );
+                    i--;
+                }else if ( rand2 <= fuelNumber/4 && i > 2){
+                    System.out.println("This car stopped because need to fuel his tank at lap " + eachLap + " in " + i + " meters " );
+                    i--;
+                }        
+                
                 try {
                     Thread.sleep(Math.abs(UUID.randomUUID().getMostSignificantBits()) % 60);
                 } catch (InterruptedException err) {
                     err.printStackTrace();
                 }
             }
+            eachLap--;
+            }
+            
         }
     }
+    class Car3 extends Thread {
+
+        public void reset() {
+            car3.setValue(0);
+            car3.repaint();
+        }
+
+        public void correr() {
+            int eachLap = lapNumber;
+            while (eachLap != 0){
+            System.out.println("Voltas restante: " + eachLap);
+            for (int i = 0; i < 101; i++) {
+                if (winner) {
+                    break;
+                }
+                
+                car3.setValue(i);
+                car3.repaint();
+                if (i == 100 && eachLap == 1) {
+                    winningCar = 3;
+                    finish(i);
+                }
+                int rand1 = (int) (Math.random() * probNumber);
+                int rand2 = (int) (Math.random() * fuelNumber);
+                if ( rand1 <= probNumber/4 && i > 3){
+                    System.out.println("This car broke at lap number " + eachLap + " in " + i + " meters" );
+                    i--;
+                }else if ( rand2 <= fuelNumber/4 && i > 2){
+                    System.out.println("This car stopped because need to fuel his tank at lap " + eachLap + " in " + i + " meters " );
+                    i--;
+                }        
+                
+                try {
+                    Thread.sleep(Math.abs(UUID.randomUUID().getMostSignificantBits()) % 60);
+                } catch (InterruptedException err) {
+                    err.printStackTrace();
+                }
+            }
+            eachLap--;
+            }
+            
+        }
+    }*/
 }
