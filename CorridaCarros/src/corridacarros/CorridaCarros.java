@@ -5,6 +5,7 @@
 package corridacarros;
 
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,7 +40,7 @@ public class CorridaCarros {
     static int fuelNumber;
 
     //the finish method synchronized so the threads must wait their turn to acess it
-    public /*synchronized*/ void finish(int i) {
+    public synchronized void finish(int i) {
         msg.setVisible(true);
         msg.setText("Car #" + winningCar + " wins the race! Reset race again!");
         if (i == 100) {
@@ -52,7 +53,7 @@ public class CorridaCarros {
         frame.getContentPane().add(msg);
     }
 
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -63,11 +64,6 @@ public class CorridaCarros {
                 }
             }
         });
-    }*/
-    
-    public static void main(String[] args) {
-            CorridaCarros window = new CorridaCarros();
-            window.frame.setVisible(true);
     }
     
 
@@ -187,20 +183,20 @@ public class CorridaCarros {
                         System.exit(0);
                     } 
                     if (carNumber == 2) {
-                        Car car1 = new Car();
-                        Car car2 = new Car();
-                        car1.correr();
-                        car2.correr();
+                        Car1 car1 = new Car1();
+                        Car2 car2 = new Car2();
+                        car1.start();
+                        car2.start();
                         car3.setVisible(false);
                     }
                     if (carNumber == 3){
                         car3.setVisible(true);
-                        Car car1 = new Car();
-                        Car car2 = new Car();
-                        Car car3 = new Car();
-                        car1.correr();
-                        car2.correr();
-                        car3.correr();
+                        Car1 car1 = new Car1();
+                        Car2 car2 = new Car2();
+                        Car3 car3 = new Car3();
+                        car1.start();
+                        car2.start();
+                        car3.start();
                     }
                 }
             }
@@ -217,11 +213,11 @@ public class CorridaCarros {
                 runRaceButtonIsPressed = false;
                 winner = false;
 
-                Car car1 = new Car();
+                Car1 car1 = new Car1();
                 car1.reset();
-                Car car2 = new Car();
+                Car2 car2 = new Car2();
                 car2.reset();
-                Car car3 = new Car();
+                Car3 car3 = new Car3();
                 car3.reset();
             }
         }
@@ -234,7 +230,7 @@ public class CorridaCarros {
         }
     }
 
-    class Car /*extends Thread*/ {
+    class Car1 extends Thread {
 
         public void reset() {
             car1.setValue(0);
@@ -246,20 +242,16 @@ public class CorridaCarros {
             
         }
 
-        public void correr() {
+        public void run() {
             int eachLap = lapNumber;
             while (eachLap != 0){
-            System.out.println("Remaining laps for the cars : " + eachLap);
+            System.out.println("Remaining laps for the car #1 : " + eachLap);
             for (int i = 0; i < 101; i++) {
                 if (winner) {
                     break;
                 }
                 car1.setValue(i);
                 car1.repaint();
-                car2.setValue(i);
-                car2.repaint();
-                car3.setValue(i);
-                car3.repaint();
                 if (i == 100 && eachLap == 1) {
                     winningCar = 1;
                     finish(i);
@@ -267,25 +259,26 @@ public class CorridaCarros {
                 int rand1 = (int) (Math.random() * probNumber);
                 int rand2 = (int) (Math.random() * fuelNumber);
                 if ( rand1 <= probNumber/4 && i > 3){
-                    System.out.println("Car broke at lap number " + eachLap + " in " + i + " meters" );
+                    System.out.println("Car #1 broke at lap number " + eachLap + " in " + i + " meters" );
                     i--;
                 }else if ( rand2 <= fuelNumber/4 && i > 2){
-                    System.out.println("Car stopped because needed to fuel his tank at lap " + eachLap + " in " + i + " meters " );
+                    System.out.println("Car #1 stopped because needed to fuel his tank at lap " + eachLap + " in " + i + " meters " );
                     i--;
                 }        
                 
-                /*try {
+                try {
                     Thread.sleep(Math.abs(UUID.randomUUID().getMostSignificantBits()) % 60);
                 } catch (InterruptedException err) {
                     err.printStackTrace();
-                }*/
+                }
             }
             eachLap--;
             }
             
         }
     }
-    /*
+    
+    
     class Car2 extends Thread {
 
         public void reset() {
@@ -293,15 +286,14 @@ public class CorridaCarros {
             car2.repaint();
         }
 
-        public void correr() {
+        public void run() {
             int eachLap = lapNumber;
             while (eachLap != 0){
-            System.out.println("Voltas restante: " + eachLap);
+            System.out.println("Remaining laps for the car #2 : " + eachLap);
             for (int i = 0; i < 101; i++) {
                 if (winner) {
                     break;
                 }
-                
                 car2.setValue(i);
                 car2.repaint();
                 if (i == 100 && eachLap == 1) {
@@ -311,10 +303,10 @@ public class CorridaCarros {
                 int rand1 = (int) (Math.random() * probNumber);
                 int rand2 = (int) (Math.random() * fuelNumber);
                 if ( rand1 <= probNumber/4 && i > 3){
-                    System.out.println("This car broke at lap number " + eachLap + " in " + i + " meters" );
+                    System.out.println("Car #2 broke at lap number " + eachLap + " in " + i + " meters" );
                     i--;
                 }else if ( rand2 <= fuelNumber/4 && i > 2){
-                    System.out.println("This car stopped because need to fuel his tank at lap " + eachLap + " in " + i + " meters " );
+                    System.out.println("Car #2 stopped because needed to fuel his tank at lap " + eachLap + " in " + i + " meters " );
                     i--;
                 }        
                 
@@ -329,6 +321,7 @@ public class CorridaCarros {
             
         }
     }
+    
     class Car3 extends Thread {
 
         public void reset() {
@@ -336,15 +329,14 @@ public class CorridaCarros {
             car3.repaint();
         }
 
-        public void correr() {
+        public void run() {
             int eachLap = lapNumber;
             while (eachLap != 0){
-            System.out.println("Voltas restante: " + eachLap);
+            System.out.println("Remaining laps for the car #3 : " + eachLap);
             for (int i = 0; i < 101; i++) {
                 if (winner) {
                     break;
                 }
-                
                 car3.setValue(i);
                 car3.repaint();
                 if (i == 100 && eachLap == 1) {
@@ -354,10 +346,10 @@ public class CorridaCarros {
                 int rand1 = (int) (Math.random() * probNumber);
                 int rand2 = (int) (Math.random() * fuelNumber);
                 if ( rand1 <= probNumber/4 && i > 3){
-                    System.out.println("This car broke at lap number " + eachLap + " in " + i + " meters" );
+                    System.out.println("Car #3 broke at lap number " + eachLap + " in " + i + " meters" );
                     i--;
                 }else if ( rand2 <= fuelNumber/4 && i > 2){
-                    System.out.println("This car stopped because need to fuel his tank at lap " + eachLap + " in " + i + " meters " );
+                    System.out.println("Car #3 stopped because needed to fuel his tank at lap " + eachLap + " in " + i + " meters " );
                     i--;
                 }        
                 
@@ -371,5 +363,5 @@ public class CorridaCarros {
             }
             
         }
-    }*/
+    }
 }
